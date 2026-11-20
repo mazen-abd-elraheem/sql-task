@@ -145,30 +145,4 @@ WHERE b.net_profit < 0
 GROUP BY m.department
 ORDER BY total_loss_amount ASC;
 
--- INSIGHT 10: Patient Retention Cohort (One-Time vs. Repeat Patients)
-WITH PatientVisitCounts AS (
-    SELECT 
-        patient_id,
-        COUNT(DISTINCT visit_id) AS visit_count,
-        SUM(b.net_revenue) AS total_spent
-    FROM dbo.visits v
-    JOIN dbo.billing_items b ON v.visit_id = b.visit_id
-    GROUP BY patient_id
-)
-SELECT 
-    CASE 
-        WHEN visit_count = 1 THEN 'One-Time Patient'
-        WHEN visit_count BETWEEN 2 AND 4 THEN 'Repeat Patient (2-4)'
-        ELSE 'Regular Patient (5+)'
-    END AS patient_group,
-    COUNT(patient_id) AS patient_count,
-    SUM(total_spent) AS group_revenue,
-    CAST(AVG(total_spent) AS DECIMAL(10,2)) AS avg_ltv
-FROM PatientVisitCounts
-GROUP BY 
-    CASE 
-        WHEN visit_count = 1 THEN 'One-Time Patient'
-        WHEN visit_count BETWEEN 2 AND 4 THEN 'Repeat Patient (2-4)'
-        ELSE 'Regular Patient (5+)'
-    END
-ORDER BY group_revenue DESC;
+
